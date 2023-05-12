@@ -39,10 +39,11 @@ public class WalletController {
         return "redirect:/wallet/info/" + userService.findByPassword(password).getId();
     }
     @PostMapping("/wallet/transact")
-    public String transactRate(@AuthenticationPrincipal User user, @RequestParam(value = "walletAmount") double walletAmount, @RequestParam(name = "walletIn") String walletIn, @RequestParam(name = "walletOut") String walletOut){
+    public String transactRate(@AuthenticationPrincipal User user, @RequestParam(value = "walletAmount") double walletAmount, @RequestParam(name = "walletIn") String walletIn, @RequestParam(name = "walletOut") String walletOut, Model model){
         if (moneysService.transactMoney(user.getId(), walletAmount, walletIn.toUpperCase(),walletOut.toUpperCase()))
             return "redirect:/wallet/info/" + user.getId();
         else return "redirect:/noMoney";
+
     }
     @GetMapping("/wallet/deposit")
     public String depositWallet(){
@@ -68,7 +69,7 @@ public class WalletController {
     public String withdrawWallets(Model model, @AuthenticationPrincipal User user, @RequestParam(value = "amount") double amount) {
         if (user.getMoneyRUB() < amount) {
             model.addAttribute("walletError", "Недостаточно средств");
-            return "no_money";
+            return "withdraw";
         } else {
             userService.withdrawForUserRub(user, amount);
             return "redirect:/wallet/info/" + user.getId();
